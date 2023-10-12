@@ -40,8 +40,8 @@ for cell, header_text in column_headers.items():
 # Устанавливаем ширину столбцов
 column_widths = {
     'A': 40,
-    'B': 20,
-    'C': 20,
+    'B': 10,
+    'C': 15,
     'D': 20,
     'E': 20,
     'F': 20,
@@ -84,6 +84,10 @@ for paragraph in doc.paragraphs:
         patient_name = text.replace("Пациент: ", "").strip()
     elif "Год рождения:" in text:
         patient_birth_year = text.replace("Год рождения:", "").strip()
+        try:
+            patient_birth_year = int(patient_birth_year)
+        except ValueError:
+            print(f"Ошибка: невозможно преобразовать '{patient_birth_year}' к целому числу года рождения.")
     elif "Дата исследования:" in text:
         examination_date = text.replace("Дата исследования:", "").strip()
 
