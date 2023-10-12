@@ -1,6 +1,7 @@
 from docx import Document
 import openpyxl
 import re
+from openpyxl.styles import Alignment
 
 # Открываем документ DOCX
 doc = Document("your_document.docx")
@@ -10,23 +11,61 @@ workbook = openpyxl.Workbook()
 worksheet = workbook.active
 
 # Заголовки для Excel
-worksheet['A1'] = 'Пациент'
-worksheet['B1'] = 'Год рождения'
-worksheet['C1'] = 'Дата исследования'
-worksheet['D1'] = 'Правая почка\n(размеры и толщина паренхимы)'
-worksheet['E1'] = 'Левая почка\n(размеры и толщина паренхимы)'
-worksheet['F1'] = 'Правая почка\n(чашечно-лоханочная система)'
-worksheet['G1'] = 'Левая почка\n(чашечно-лоханочная система)'
-worksheet['H1'] = 'Правая лоханка\n(размер)'
-worksheet['I1'] = 'Левая лоханка\n(размер)'
-worksheet['J1'] = 'Правая почка\n(конкремент размер)'
-worksheet['K1'] = 'Левая почка\n(конкремент размер)'
-worksheet['L1'] = 'Правая почка\n(паренхима толщина)'
-worksheet['M1'] = 'Левая почка\n(паренхима толщина)'
-worksheet['N1'] = 'Правая почка\n(высота)'
-worksheet['O1'] = 'Правая почка\n(ширина)'
-worksheet['P1'] = 'Левая почка\n(высота)'
-worksheet['Q1'] = 'Левая почка\n(ширина)'
+column_headers = {
+    'A1': 'Пациент',
+    'B1': 'Год рождения',
+    'C1': 'Дата исследования',
+    'D1': 'Правая почка\n(размеры и толщина паренхимы)',
+    'E1': 'Левая почка\n(размеры и толщина паренхимы)',
+    'F1': 'Правая почка\n(чашечно-лоханочная система)',
+    'G1': 'Левая почка\n(чашечно-лоханочная система)',
+    'H1': 'Правая лоханка\n(размер)',
+    'I1': 'Левая лоханка\n(размер)',
+    'J1': 'Правая почка\n(конкремент размер)',
+    'K1': 'Левая почка\n(конкремент размер)',
+    'L1': 'Правая почка\n(паренхима толщина)',
+    'M1': 'Левая почка\n(паренхима толщина)',
+    'N1': 'Правая почка\n(высота)',
+    'O1': 'Правая почка\n(ширина)',
+    'P1': 'Левая почка\n(высота)',
+    'Q1': 'Левая почка\n(ширина)'
+}
+
+#Добавим заголовки столбцов на лист и установите перенос текста
+for cell, header_text in column_headers.items():
+    worksheet[cell] = header_text
+    worksheet.column_dimensions[cell[:-1]].width = 20  # Отрегулируем ширину столбца по мере необходимости
+    worksheet[cell].alignment = Alignment(wrapText=True)
+
+# Устанавливаем ширину столбцов
+column_widths = {
+    'A': 40,
+    'B': 20,
+    'C': 20,
+    'D': 20,
+    'E': 20,
+    'F': 20,
+    'G': 20,
+    'H': 20,
+    'I': 20,
+    'J': 20,
+    'K': 20,
+    'L': 20,
+    'M': 20,
+    'N': 20,
+    'O': 20,
+    'P': 20,
+    'Q': 20
+}
+
+#Устанавливаем заголовки и ширину столбцов
+for cell, header in column_headers.items():
+    worksheet[cell] = header
+
+for column, width in column_widths.items():
+    worksheet.column_dimensions[column].width = width
+
+worksheet.row_dimensions[1].height = 30
 
 # Индекс строки в Excel
 row_index = 2
