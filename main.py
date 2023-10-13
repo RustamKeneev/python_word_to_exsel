@@ -86,22 +86,28 @@ examination_date = None
 # Регулярное выражение для удаления ненужных текстов
 pattern = r'(не увеличена, расположена в типичном месте|обычной акустической плотности, кортико-медуллярная дифференциация сохранена)'
 
+
+# Проверка наличия слова в тексте
+def check_word_in_text(word, text):
+    return True if text.find(word) != -1 else False
+
+
 for paragraph in doc.paragraphs:
     text = paragraph.text
     if "Пациент: " in text:
         patient_name = text.replace("Пациент: ", "").strip()
-    if "Год рождения:" in text:
-        clean_text = re.sub(r'\D', '', text)  # Извлекаем только цифры из строки
-        try:
-            patient_birth_year = int(clean_text)
-        except ValueError:
-            print(f"Ошибка: невозможно преобразовать '{clean_text}' к целому числу года рождения.")
-    # elif "Год рождения:" in text:
-    #     patient_birth_year = text.replace("Год рождения:", "").strip()
+    # if "Год рождения:" in text:
+    #     clean_text = re.sub(r'\D', '', text)  # Извлекаем только цифры из строки
     #     try:
-    #         patient_birth_year = int(patient_birth_year)
+    #         patient_birth_year = int(clean_text)
     #     except ValueError:
-    #         print(f"Ошибка: невозможно преобразовать '{patient_birth_year}' к целому числу года рождения.")
+    #         print(f"Ошибка: невозможно преобразовать '{clean_text}' к целому числу года рождения.")
+    elif "Год рождения:" in text:
+        patient_birth_year = text.replace("Год рождения:", "").strip()
+        try:
+            patient_birth_year = int(patient_birth_year)
+        except ValueError:
+            print(f"Ошибка: невозможно преобразовать '{patient_birth_year}' к целому числу года рождения.")
     elif "Дата исследования:" in text:
         examination_date = text.replace("Дата исследования:", "").strip()
 
@@ -143,6 +149,8 @@ for paragraph in doc.paragraphs:
             left_kidney_system = "расширена"
         else:
             left_kidney_system = "не расширена"
+        worksheet.cell(row=row_index, column=6, value=right_kidney_system)
+        worksheet.cell(row=row_index, column=7, value=left_kidney_system)
 
         right_kidney_lohanka = None
         left_kidney_lohanka = None
@@ -219,8 +227,7 @@ for paragraph in doc.paragraphs:
             worksheet.cell(row=row_index, column=3, value=examination_date)
             worksheet.cell(row=row_index, column=4, value=right_kidney_size)
             worksheet.cell(row=row_index, column=5, value=left_kidney_size)
-            worksheet.cell(row=row_index, column=6, value=right_kidney_system)
-            worksheet.cell(row=row_index, column=7, value=left_kidney_system)
+
             worksheet.cell(row=row_index, column=8, value=right_kidney_lohanka)
             worksheet.cell(row=row_index, column=9, value=left_kidney_lohanka)
             worksheet.cell(row=row_index, column=10, value=right_kidney_concrement)
