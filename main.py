@@ -28,7 +28,11 @@ column_headers = {
     'N1': 'Правая почка\n(высота)',
     'O1': 'Правая почка\n(ширина)',
     'P1': 'Левая почка\n(высота)',
-    'Q1': 'Левая почка\n(ширина)'
+    'Q1': 'Левая почка\n(ширина)',
+    'R1': 'Предстательная железа\n(ширина)',
+    'S1': 'Предстательная железа\n(высота)',
+    'T1': 'Предстательная железа\n(передне-задний размер)',
+    'U1': 'объем железы',
 }
 
 #Добавим заголовки столбцов на лист и установите перенос текста
@@ -42,10 +46,10 @@ column_widths = {
     'A': 40,
     'B': 10,
     'C': 15,
-    'D': 20,
-    'E': 20,
-    'F': 20,
-    'G': 20,
+    'D': 30,
+    'E': 30,
+    'F': 30,
+    'G': 30,
     'H': 20,
     'I': 20,
     'J': 20,
@@ -55,7 +59,11 @@ column_widths = {
     'N': 20,
     'O': 20,
     'P': 20,
-    'Q': 20
+    'Q': 20,
+    'R': 20,
+    'S': 20,
+    'T': 20,
+    'U': 20,
 }
 
 #Устанавливаем заголовки и ширину столбцов
@@ -82,12 +90,18 @@ for paragraph in doc.paragraphs:
     text = paragraph.text
     if "Пациент: " in text:
         patient_name = text.replace("Пациент: ", "").strip()
-    elif "Год рождения:" in text:
-        patient_birth_year = text.replace("Год рождения:", "").strip()
+    if "Год рождения:" in text:
+        clean_text = re.sub(r'\D', '', text)  # Извлекаем только цифры из строки
         try:
-            patient_birth_year = int(patient_birth_year)
+            patient_birth_year = int(clean_text)
         except ValueError:
-            print(f"Ошибка: невозможно преобразовать '{patient_birth_year}' к целому числу года рождения.")
+            print(f"Ошибка: невозможно преобразовать '{clean_text}' к целому числу года рождения.")
+    # elif "Год рождения:" in text:
+    #     patient_birth_year = text.replace("Год рождения:", "").strip()
+    #     try:
+    #         patient_birth_year = int(patient_birth_year)
+    #     except ValueError:
+    #         print(f"Ошибка: невозможно преобразовать '{patient_birth_year}' к целому числу года рождения.")
     elif "Дата исследования:" in text:
         examination_date = text.replace("Дата исследования:", "").strip()
 
@@ -166,6 +180,38 @@ for paragraph in doc.paragraphs:
             left_kidney_parenchyma_match = re.search(r'паренхима толщиной (\d+) мм', left_kidney)
             if left_kidney_parenchyma_match:
                 left_kidney_parenchyma = int(left_kidney_parenchyma_match.group(1))
+        else:
+            pass
+
+        prostate_width = None
+        prostate_height = None
+        prostate_depth = None
+
+        # Извлекаем данные о предстательной железе
+        if "Предстательная железа" in text:
+            prostate_data = re.search(r'Предстательная железа\s+(\d+)х(\d+)х(\d+) мм', text)
+            if prostate_data:
+                prostate_width = int(prostate_data.group(1))
+                prostate_height = int(prostate_data.group(2))
+                prostate_depth = int(prostate_data.group(3))
+
+            worksheet.cell(row=row_index, column=18, value=prostate_width)
+            worksheet.cell(row=row_index, column=19, value=prostate_height)
+            worksheet.cell(row=row_index, column=20, value=prostate_depth)
+        else:
+            # Пропустить добавление данных о предстательной железе, оставив ячейки пустыми
+            worksheet.cell(row=row_index, column=18, value=None)
+            worksheet.cell(row=row_index, column=19, value=None)
+            worksheet.cell(row=row_index, column=20, value=None)
+
+        # Извлекаем данные о предстательной железе
+        prostate_volume = None
+        prostate_match = re.search(r'объем железы (\d+) мл', text)
+        if prostate_match:
+            prostate_volume = int(prostate_match.group(1))
+            worksheet.cell(row=row_index, column=21, value=prostate_volume)
+        else:
+            worksheet.cell(row=row_index, column=21, value=None)
 
             # Добавляем данные в Excel
             worksheet.cell(row=row_index, column=1, value=patient_name)
